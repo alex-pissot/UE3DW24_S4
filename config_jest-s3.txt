@@ -1,0 +1,54 @@
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": ".",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "reporters": [
+      "default",
+      "jest-sonar"
+    ],
+    "coverageReporters": [
+      "cobertura",
+      "text",
+      "lcov"
+    ],
+    "coveragePathIgnorePatterns": [
+      "database/*",
+      "/node_modules/",
+      "/coverage/",
+      "/dist/",
+      "/test/",
+      "main.ts",
+      ".eslintrc.js",
+      "<rootDir>/.*/index.ts",
+      "<rootDir>/.*.module.ts",
+      "<rootDir>/.*.dto.ts",
+      "<rootDir>/.*.schema.ts",
+      "<rootDir>/.*/core.listen.ts",
+      "<rootDir>/.*.entity.ts"
+    ],
+    "roots": [
+      "<rootDir>"
+    ],
+    "testResultsProcessor": "jest-sonar-reporter"
+  },
+  "jestSonar": {
+    "reportFile": "sonar-test-report.xml",
+    "indent": 4
+  },
+  "jestTestResultProcessors": [
+    "jest-junit-reporter",
+    "jest-sonar-reporter"
+  ]
+}
