@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { Users } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt'
+import { bcryptSaltRounds } from '../auth/constants';
 
 @Injectable()
 export class UsersService {
@@ -12,8 +14,24 @@ export class UsersService {
     private usersRepository: Repository<Users>
 ) { }
 
-  createUser(createUserDto: CreateUserDto) {
-    return this.usersRepository.save(createUserDto);
+  async createUser(createUserDto: CreateUserDto) {
+    const hashpassword = await this.encrypt(createUserDto.password);
+    return this.usersRepository.save(
+      {
+        firstname: createUserDto.firstname,
+        lastname: createUserDto.lastname,
+        email: createUserDto.email,
+        password: hashpassword
+      }
+    );
+  }
+
+  async encrypt(password:string): Promise<Users> {
+    return await bcrypt.hash(password, bcryptSaltRounds);
+  }
+
+  async hashCompare(reqPass, dbPass){
+    return bcrypt.compare(reqPass, dbPass);
   }
 
   findAll() {
@@ -24,8 +42,22 @@ export class UsersService {
     await this.usersRepository.findOne(id);
   }
 
+  async findUser(query:any): Promise<Users> {
+    return this.usersRepository.findOne(query);
+  }
+
+
   async update(id: number, updateUserDto: UpdateUserDto) {
-    await this.usersRepository.update(id, updateUserDto);
+    let user : any = {};
+
+    if (!!updateUserDto.password){
+      const hashpassword = await this.encrypt(updateUserDto.password);
+      user.password = hashpassword;
+    }
+
+    return await this.usersRepository.update(id, {
+      ...updateUserDto, ...user.password
+    });
   }
 
   async remove(id: number) {
